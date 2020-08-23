@@ -11,14 +11,13 @@ import SwiftUI
 struct EmojiMemoryGameView: View { // "View" é um protocolo, por isso tem acesso ao padding, foregroundColor e font abaixo
     @ObservedObject var viewModel: EmojiMemoryGame //redesenhar toda vez que a viewModel publicar que o model mudou, funciona aqui pq o "EmojiMemoryGame" utilizou o protocolo ObservableObject. Redesenha apenas o que mudou!!
     var body: some View { // var body é uma variavel computada, ela tem chaves
-        HStack{
-            ForEach(viewModel.cards) { card in
+        Grid(viewModel.cards) { card in
                 CardView(card: card).onTapGesture {
                     self.viewModel.choose(card: card)
                 }
                 .aspectRatio(2/3, contentMode: .fit)
+                .padding()
             }
-        }
         .padding() //pode ser colocado valores entre o parenteses, mas é bom usar o padrao
         .foregroundColor(Color.orange)
     }
@@ -33,11 +32,13 @@ struct CardView: View {
                     RoundedRectangle(cornerRadius: self.cornerRadius)
                         .fill(Color.white)
                     RoundedRectangle(cornerRadius: self.cornerRadius)
-                        .stroke(lineWidth: 3)
+                        .stroke(lineWidth: self.edgeLineWidth)
                     Text(self.card.content)
                 } else {
-                    RoundedRectangle(cornerRadius: self.cornerRadius)
+                    if !self.card.isMatched {
+                        RoundedRectangle(cornerRadius: self.cornerRadius)
                         .fill()
+                    }
                 }
             }
             .font(Font.system(size: min(geometry.size.width, geometry.size.height) * self.fontScaleFactor))
